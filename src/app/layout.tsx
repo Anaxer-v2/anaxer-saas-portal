@@ -1,7 +1,5 @@
-import { Inter } from 'next/font/google'
 import "./globals.css";
-
-const inter = Inter({ subsets: ['latin'] })
+import { AuthProvider } from './authContext';
 
 export const metadata = {
   title: 'Your App Name',
@@ -15,7 +13,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body style={{ fontFamily: '"Segoe UI", Arial, sans-serif' }}>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+      </body>
     </html>
   )
 }

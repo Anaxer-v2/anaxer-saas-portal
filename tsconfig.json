@@ -23,6 +23,6 @@
       "@xyflow/react": ["node_modules/@xyflow/react"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/components/registration/registrationForm.tsx", "src/app/(routes)/register/page.tsx.disabled"],
   "exclude": ["node_modules"]
 }
