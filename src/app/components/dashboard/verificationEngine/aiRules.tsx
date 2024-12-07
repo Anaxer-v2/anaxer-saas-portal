@@ -1,27 +1,17 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState } from 'react'
 import { AgentStatus } from '../../../types/aiAgents'
-import StatusButton from '../../shared/statusButton'
 import { MdEdit, MdCheck } from 'react-icons/md'
 import Button from '../../shared/button'
 import { IoChatboxEllipsesOutline } from 'react-icons/io5'
-import dynamic from 'next/dynamic'
-import type ReactQuill from 'react-quill';
-
-const ReactQuillComponent = dynamic<React.ComponentProps<typeof ReactQuill> & { readOnly?: boolean, theme?: string }>(() => import('react-quill'), { 
-  ssr: false,
-  loading: () => <p>Loading editor...</p>
-})
-
-import 'react-quill/dist/quill.snow.css'
-import 'react-quill/dist/quill.bubble.css'
+import { useEditor, EditorContent } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
 
 // Define the RequirementTemplate type
 interface RequirementTemplate {
   id: string;
   name: string;
-  // ... other properties
 }
 
 interface AgentTrainingProps {
@@ -38,7 +28,10 @@ const AgentTraining: React.FC<AgentTrainingProps> = ({
   onChatClick
 }) => {
   const [isEditingInstructions, setIsEditingInstructions] = useState(false)
-  const [instructions, setInstructions] = useState(`
+  
+  const editor = useEditor({
+    extensions: [StarterKit],
+    content: `
 <p><strong>Mark the document as verified if all of the conditions are true:</strong></p>
 <ul>
   <li>Document is dated within the last 60 days.</li>
@@ -54,26 +47,47 @@ const AgentTraining: React.FC<AgentTrainingProps> = ({
 </ul>
 <br>
 <p>If you are unable to make a conclusion, notify me for further review.</p>
-  `.trim())
+    `.trim(),
+    editable: isEditingInstructions,
+  })
 
   const handleEditInstructions = () => {
-    if (isEditingInstructions) {
-      // Save logic here
-      // You might want to add logic here to save the instructions to a backend
+    if (isEditingInstructions && editor) {
+      // Save logic here if needed
+      editor.setEditable(false)
+    } else if (editor) {
+      editor.setEditable(true)
     }
     setIsEditingInstructions(!isEditingInstructions)
   }
 
-  const modules = {
-    toolbar: [
-      ['bold', 'italic', 'underline'],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      ['clean']
-    ],
-  }
-
   return (
     <div className="mb-6">
+      <style jsx global>{`
+        .ProseMirror {
+          min-height: 200px;
+          padding: 1rem;
+          border-radius: 0.375rem;
+          outline: none;
+        }
+        .ProseMirror p {
+          margin: 1em 0;
+        }
+        .ProseMirror ul {
+          padding-left: 1em;
+          margin: 1em 0;
+        }
+        .ProseMirror.ProseMirror-focused {
+          outline: none;
+          border-color: #3b82f6;
+        }
+        .editing-mode .ProseMirror {
+          border: 1px solid #e2e8f0;
+        }
+        .read-only-mode .ProseMirror {
+          border: none;
+        }
+      `}</style>
       <div className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-medium text-gray-700">Agent prompt</h3>
         <button
@@ -83,15 +97,8 @@ const AgentTraining: React.FC<AgentTrainingProps> = ({
           {isEditingInstructions ? <MdCheck size={20} /> : <MdEdit size={20} />}
         </button>
       </div>
-      <div className={`custom-quill ${isEditingInstructions ? 'editing-mode' : 'read-only-mode'}`}>
-        <ReactQuillComponent 
-          key={isEditingInstructions ? 'edit' : 'read'}
-          value={instructions} 
-          onChange={setInstructions}
-          modules={isEditingInstructions ? modules : {}}
-          readOnly={!isEditingInstructions}
-          theme={isEditingInstructions ? 'snow' : 'bubble'}
-        />
+      <div className={`editor-container ${isEditingInstructions ? 'editing-mode' : 'read-only-mode'}`}>
+        <EditorContent editor={editor} />
       </div>
       {!isEditingInstructions && (
         <div className="mt-8">
