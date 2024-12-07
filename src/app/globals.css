@@ -1,0 +1,156 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@keyframes emit-light {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--light-color), 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(var(--light-color), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--light-color), 0);
+  }
+}
+
+.light-off {
+  --light-color: 156, 163, 175;
+}
+
+.light-testing {
+  --light-color: 251, 191, 36;
+}
+
+.light-live {
+  --light-color: 34, 197, 94;
+}
+
+.emit-light {
+  animation: emit-light 2s infinite;
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(155, 155, 155, 0.5);
+  border-radius: 20px;
+}
+
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-default {
+  scrollbar-width: thin;
+  -ms-overflow-style: auto;
+}
+
+.scrollbar-default::-webkit-scrollbar {
+  width: 6px;
+  display: block;
+}
+
+.scrollbar-default::-webkit-scrollbar-thumb {
+  background-color: rgba(155, 155, 155, 0.5);
+  border-radius: 3px;
+}
+
+@keyframes ellipsis {
+  0% { content: '.'; }
+  33% { content: '..'; }
+  66% { content: '...'; }
+}
+
+.typing-animation::after {
+  content: '.';
+  animation: ellipsis 1.5s infinite;
+}
+
+.rich-text-content ul, 
+.rich-text-content ol {
+  padding-left: 1.5em;
+  margin-bottom: 1em;
+}
+
+.rich-text-content li {
+  margin-bottom: 0.5em;
+}
+
+.rich-text-content p {
+  margin-bottom: 1em;
+}
+
+.rich-text-content strong {
+  font-weight: 600;
+  color: #374151; /* Adjust this color as needed */
+}
+
+.custom-quill .ql-editor {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+}
+
+.custom-quill .ql-editor p,
+.custom-quill .ql-editor ul,
+.custom-quill .ql-editor ol {
+  font-size: 15px;
+}
+
+/* src/app/components/journey-builder/CustomNode.css */
+.custom-node {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  width: 150px;
+  text-align: center;
+}
+
+.custom-node-header {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.custom-node-body {
+  margin-bottom: 5px;
+}
