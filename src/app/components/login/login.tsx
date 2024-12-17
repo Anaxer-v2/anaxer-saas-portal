@@ -81,9 +81,9 @@ export default function Login() {
         }
 
         if (profile?.workflow_step === 'entity_pending') {
-          router.push('/register?step=2');
+          router.replace('/register?step=2');
         } else {
-          router.push('/workspace');
+          router.replace('/workspace');
         }
       }
     })
