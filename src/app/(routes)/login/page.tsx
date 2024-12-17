@@ -1,24 +1,8 @@
-'use client'
+import Login from '../../components/login/login'
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import Login from '@/app/components/login/login'
+// Disable static generation for this page
+export const dynamic = 'force-dynamic'
 
 export default function LoginPage() {
-  const router = useRouter()
-  const supabase = createClientComponentClient()
-
-  useEffect(() => {
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (session) {
-        router.push('/workspace')
-      }
-    }
-
-    checkSession()
-  }, [supabase, router])
-
   return <Login />
 }
