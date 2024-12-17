@@ -1,8 +1,6 @@
 'use client';
 
 import Link from 'next/link'
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Auth } from '@supabase/auth-ui-react'
@@ -62,82 +60,7 @@ const customTheme = {
 }
 
 export default function Login() {
-  const router = useRouter();
   const supabase = createClientComponentClient()
-
-  useEffect(() => {
-    console.log('Setting up auth state change listener');
-    
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, 'Session:', session ? 'exists' : 'null');
-      
-      if (event === 'SIGNED_IN' && session) {
-        console.log('User signed in, fetching profile');
-        
-        // Fetch the user's profile to check workflow step
-        const { data: profile, error } = await supabase
-          .from('profiles')
-          .select('workflow_step')
-          .eq('id', session.user.id)
-          .single();
-
-        if (error) {
-          console.error('Error fetching profile:', error);
-          return;
-        }
-
-        console.log('Profile workflow step:', profile?.workflow_step);
-
-        // Add a small delay to ensure auth state is fully processed
-        setTimeout(() => {
-          if (profile?.workflow_step === 'entity_pending') {
-            console.log('Redirecting to registration step 2');
-            router.replace('/register?step=2');
-          } else {
-            console.log('Redirecting to workspace');
-            router.replace('/workspace');
-          }
-        }, 500);
-      }
-    });
-
-    // Check initial session
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      console.log('Initial session check:', session ? 'exists' : 'null');
-      
-      if (session) {
-        console.log('Initial session exists, fetching profile');
-        const { data: profile, error } = await supabase
-          .from('profiles')
-          .select('workflow_step')
-          .eq('id', session.user.id)
-          .single();
-
-        if (error) {
-          console.error('Error fetching initial profile:', error);
-          return;
-        }
-
-        console.log('Initial profile workflow step:', profile?.workflow_step);
-
-        if (profile?.workflow_step === 'entity_pending') {
-          console.log('Initial redirect to registration step 2');
-          router.replace('/register?step=2');
-        } else {
-          console.log('Initial redirect to workspace');
-          router.replace('/workspace');
-        }
-      }
-    };
-
-    checkSession();
-
-    return () => {
-      console.log('Cleaning up auth state listener');
-      subscription.unsubscribe();
-    }
-  }, [supabase, router])
 
   return (
     <div className="w-full h-full min-h-screen flex items-center justify-center">
