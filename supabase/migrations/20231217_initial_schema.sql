@@ -1,4 +1,9 @@
--- Drop functions and types first (they don't depend on tables)
+-- First, drop triggers that depend on functions
+DROP TRIGGER IF EXISTS update_entities_updated_at ON entities;
+DROP TRIGGER IF EXISTS update_profiles_updated_at ON profiles;
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+
+-- Then drop functions and types
 DROP FUNCTION IF EXISTS update_updated_at_column();
 DROP FUNCTION IF EXISTS handle_new_user();
 DROP TYPE IF EXISTS registration_status;
@@ -39,8 +44,8 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Drop tables if they exist (in correct order due to dependencies)
-DROP TABLE IF EXISTS entities;
-DROP TABLE IF EXISTS profiles;
+DROP TABLE IF EXISTS entities CASCADE;
+DROP TABLE IF EXISTS profiles CASCADE;
 
 -- Create profiles table
 CREATE TABLE IF NOT EXISTS profiles (
@@ -110,19 +115,18 @@ EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
 -- Create triggers
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW
     EXECUTE FUNCTION public.handle_new_user();
 
 -- Create triggers for updated_at (only after tables exist)
-DROP TRIGGER IF EXISTS update_profiles_updated_at ON profiles;
 CREATE TRIGGER update_profiles_updated_at
     BEFORE UPDATE ON profiles
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
 
-DROP TRIGGER IF EXISTS update_entities_updated_at ON entities;
 CREATE TRIGGER update_entities_updated_at
     BEFORE UPDATE ON entities
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column(); 
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column(); 
