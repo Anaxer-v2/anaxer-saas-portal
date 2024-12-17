@@ -3,6 +3,10 @@ DROP TRIGGER IF EXISTS update_entities_updated_at ON entities;
 DROP TRIGGER IF EXISTS update_profiles_updated_at ON profiles;
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 
+-- Drop tables (which use the type and functions)
+DROP TABLE IF EXISTS entities CASCADE;
+DROP TABLE IF EXISTS profiles CASCADE;
+
 -- Then drop functions and types
 DROP FUNCTION IF EXISTS update_updated_at_column();
 DROP FUNCTION IF EXISTS handle_new_user();
@@ -42,10 +46,6 @@ EXCEPTION
         RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Drop tables if they exist (in correct order due to dependencies)
-DROP TABLE IF EXISTS entities CASCADE;
-DROP TABLE IF EXISTS profiles CASCADE;
 
 -- Create profiles table
 CREATE TABLE IF NOT EXISTS profiles (
