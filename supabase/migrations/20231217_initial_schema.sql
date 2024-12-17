@@ -1,6 +1,16 @@
--- First, drop triggers that depend on functions
-DROP TRIGGER IF EXISTS update_entities_updated_at ON entities;
-DROP TRIGGER IF EXISTS update_profiles_updated_at ON profiles;
+-- First, check if tables exist and drop their triggers if they do
+DO $$ 
+BEGIN
+    IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'entities') THEN
+        DROP TRIGGER IF EXISTS update_entities_updated_at ON entities;
+    END IF;
+    
+    IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'profiles') THEN
+        DROP TRIGGER IF EXISTS update_profiles_updated_at ON profiles;
+    END IF;
+END $$;
+
+-- Drop auth trigger separately as it's in a different schema
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 
 -- Drop tables (which use the type and functions)
