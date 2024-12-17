@@ -15,41 +15,45 @@ export default function CreateAccount({ formData, handleInputChange }: CreateAcc
     <>
       <div className="flex space-x-4">
         <div className="flex-1">
-          <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
+          <label htmlFor="first-name" className="block text-sm leading-6 text-gray-900">
             First name
           </label>
           <div className="mt-2">
             <input
-              id="first-name"
+              id="first_name"
               name="first_name"
               type="text"
+              autoComplete="given-name"
               required
+              placeholder="First name"
               value={formData.first_name}
               onChange={handleInputChange}
-              className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              className="block w-full rounded-md border-0 h-[46px] py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#3b82f6] sm:text-sm sm:leading-6"
             />
           </div>
         </div>
         <div className="flex-1">
-          <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-gray-900">
+          <label htmlFor="last-name" className="block text-sm leading-6 text-gray-900">
             Last name
           </label>
           <div className="mt-2">
             <input
-              id="last-name"
+              id="last_name"
               name="last_name"
               type="text"
+              autoComplete="family-name"
               required
+              placeholder="Last name"
               value={formData.last_name}
               onChange={handleInputChange}
-              className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              className="block w-full rounded-md border-0 h-[46px] py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#3b82f6] sm:text-sm sm:leading-6"
             />
           </div>
         </div>
       </div>
 
       <div>
-        <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+        <label htmlFor="email" className="block text-sm leading-6 text-gray-900">
           Email address
         </label>
         <div className="mt-2">
@@ -59,15 +63,16 @@ export default function CreateAccount({ formData, handleInputChange }: CreateAcc
             type="email"
             autoComplete="email"
             required
+            placeholder="name@company.com"
             value={formData.email}
             onChange={handleInputChange}
-            className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            className="block w-full rounded-md border-0 h-[46px] py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#3b82f6] sm:text-sm sm:leading-6"
           />
         </div>
       </div>
 
       <div>
-        <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
+        <label htmlFor="password" className="block text-sm leading-6 text-gray-900">
           Password
         </label>
         <div className="mt-2">
@@ -77,9 +82,10 @@ export default function CreateAccount({ formData, handleInputChange }: CreateAcc
             type="password"
             autoComplete="new-password"
             required
+            placeholder="Enter your password"
             value={formData.password}
             onChange={handleInputChange}
-            className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            className="block w-full rounded-md border-0 h-[46px] py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#3b82f6] sm:text-sm sm:leading-6"
           />
         </div>
       </div>

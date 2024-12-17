@@ -10,14 +10,45 @@ export default function LoginPage() {
   const supabase = createClientComponentClient()
 
   useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        // Check workflow step
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('workflow_step')
+          .eq('id', session.user.id)
+          .single()
+
+        if (profile?.workflow_step === 'entity_pending') {
+          router.replace('/register?step=2')
+        } else {
+          router.replace('/workspace')
+        }
+      }
+    })
+
+    // Also check initial session
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       if (session) {
-        router.push('/workspace')
+        // Check workflow step
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('workflow_step')
+          .eq('id', session.user.id)
+          .single()
+
+        if (profile?.workflow_step === 'entity_pending') {
+          router.replace('/register?step=2')
+        } else {
+          router.replace('/workspace')
+        }
       }
     }
 
     checkSession()
+
+    return () => subscription.unsubscribe()
   }, [supabase, router])
 
   return <Login />
