@@ -1,3 +1,20 @@
+-- Drop existing objects if they exist
+DROP TRIGGER IF EXISTS update_entities_updated_at ON entities;
+DROP TRIGGER IF EXISTS update_profiles_updated_at ON profiles;
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+DROP FUNCTION IF EXISTS update_updated_at_column();
+DROP FUNCTION IF EXISTS handle_new_user();
+DROP POLICY IF EXISTS "Users can insert entities" ON entities;
+DROP POLICY IF EXISTS "Users can update entities they created" ON entities;
+DROP POLICY IF EXISTS "Users can view entities they created" ON entities;
+DROP POLICY IF EXISTS "Users can update their own profile" ON profiles;
+DROP POLICY IF EXISTS "Users can view their own profile" ON profiles;
+DROP INDEX IF EXISTS entities_created_by_idx;
+DROP INDEX IF EXISTS profiles_email_idx;
+DROP TABLE IF EXISTS entities;
+DROP TABLE IF EXISTS profiles;
+DROP TYPE IF EXISTS registration_status;
+
 -- Create custom types
 CREATE TYPE registration_status AS ENUM (
     'created',           -- Initial profile created
@@ -6,7 +23,7 @@ CREATE TYPE registration_status AS ENUM (
 );
 
 -- Create profiles table
-CREATE TABLE profiles (
+CREATE TABLE IF NOT EXISTS profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id),
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL,
@@ -17,7 +34,7 @@ CREATE TABLE profiles (
 );
 
 -- Create entities table
-CREATE TABLE entities (
+CREATE TABLE IF NOT EXISTS entities (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
     industry TEXT NOT NULL,
@@ -28,34 +45,49 @@ CREATE TABLE entities (
 );
 
 -- Create indexes
-CREATE INDEX profiles_email_idx ON profiles(email);
-CREATE INDEX entities_created_by_idx ON entities(created_by);
+CREATE INDEX IF NOT EXISTS profiles_email_idx ON profiles(email);
+CREATE INDEX IF NOT EXISTS entities_created_by_idx ON entities(created_by);
 
 -- Set up Row Level Security (RLS)
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE entities ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for profiles
+DO $$ BEGIN
 CREATE POLICY "Users can view their own profile"
     ON profiles FOR SELECT
     USING (auth.uid() = id);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
+DO $$ BEGIN
 CREATE POLICY "Users can update their own profile"
     ON profiles FOR UPDATE
     USING (auth.uid() = id);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- Create policies for entities
+DO $$ BEGIN
 CREATE POLICY "Users can view entities they created"
     ON entities FOR SELECT
     USING (auth.uid() = created_by);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
+DO $$ BEGIN
 CREATE POLICY "Users can update entities they created"
     ON entities FOR UPDATE
     USING (auth.uid() = created_by);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
+DO $$ BEGIN
 CREATE POLICY "Users can insert entities"
     ON entities FOR INSERT
     WITH CHECK (auth.uid() = created_by);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- Create function to handle user creation
 CREATE OR REPLACE FUNCTION public.handle_new_user()
@@ -72,16 +104,13 @@ BEGIN
     RETURN NEW;
 EXCEPTION
     WHEN others THEN
-        -- Log the error (in a real application, you'd want proper error logging)
         RAISE LOG 'Error in handle_new_user: %', SQLERRM;
         RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Drop existing trigger if it exists
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-
 -- Create trigger for new user creation
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW
@@ -97,10 +126,12 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create triggers for updated_at
+DROP TRIGGER IF EXISTS update_profiles_updated_at ON profiles;
 CREATE TRIGGER update_profiles_updated_at
     BEFORE UPDATE ON profiles
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_entities_updated_at ON entities;
 CREATE TRIGGER update_entities_updated_at
     BEFORE UPDATE ON entities
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column(); 
