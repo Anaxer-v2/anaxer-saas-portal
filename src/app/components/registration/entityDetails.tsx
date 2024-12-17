@@ -15,7 +15,7 @@ export default function EntityDetails({ formData, handleInputChange, industries,
   return (
     <>
       <div>
-        <label htmlFor="business_name" className="block text-sm font-medium leading-6 text-gray-900">
+        <label htmlFor="business_name" className="block text-sm leading-6 text-gray-900">
           Business name
         </label>
         <input
@@ -23,13 +23,14 @@ export default function EntityDetails({ formData, handleInputChange, industries,
           name="business_name"
           type="text"
           required
+          placeholder="Enter your business name"
           value={formData.business_name}
           onChange={handleInputChange}
-          className="mt-2 block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          className="block w-full rounded-md border-0 h-[46px] py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#3b82f6] sm:text-sm sm:leading-6"
         />
       </div>
       <div>
-        <label htmlFor="industry" className="block text-sm font-medium leading-6 text-gray-900">
+        <label htmlFor="industry" className="block text-sm leading-6 text-gray-900">
           Industry
         </label>
         <select
@@ -38,7 +39,7 @@ export default function EntityDetails({ formData, handleInputChange, industries,
           required
           value={formData.industry}
           onChange={handleInputChange}
-          className="mt-2 block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          className="block w-full rounded-md border-0 h-[46px] py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#3b82f6] sm:text-sm sm:leading-6"
         >
           <option value="">Select an industry</option>
           {industries.map((industry) => (
@@ -47,7 +48,7 @@ export default function EntityDetails({ formData, handleInputChange, industries,
         </select>
       </div>
       <div>
-        <label htmlFor="country" className="block text-sm font-medium leading-6 text-gray-900">
+        <label htmlFor="country" className="block text-sm leading-6 text-gray-900">
           Country
         </label>
         <select
@@ -56,7 +57,7 @@ export default function EntityDetails({ formData, handleInputChange, industries,
           required
           value={formData.country}
           onChange={handleInputChange}
-          className="mt-2 block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          className="block w-full rounded-md border-0 h-[46px] py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#3b82f6] sm:text-sm sm:leading-6"
         >
           <option value="">Select a country</option>
           {countries.map((country) => (

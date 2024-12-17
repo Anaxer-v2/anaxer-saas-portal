@@ -66,9 +66,20 @@ export default function Login() {
   const supabase = createClientComponentClient()
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        router.push('/workspace');
+        // Check user's workflow step
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('workflow_step')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profile?.workflow_step === 'entity_pending') {
+          router.push('/register?step=2');
+        } else {
+          router.push('/workspace');
+        }
       }
     })
 
@@ -82,7 +93,7 @@ export default function Login() {
         <div className="text-center">
           <Image
             className="mx-auto h-8 w-auto mb-5"
-            src="/assets/Anaxer_logo.svg"
+            src="/assets/Anaxer_black.svg"
             alt="Anaxer"
             width={100}
             height={32}

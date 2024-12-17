@@ -36,14 +36,14 @@ export default function OtpVerification({
           {[0, 1, 2, 3].map((index) => (
             <React.Fragment key={index}>
               <input
+                id={`otp-${index}`}
                 type="text"
                 maxLength={1}
                 value={otpCode[index]}
                 onChange={(e) => handleOtpChange(e, index)}
                 onKeyDown={(e) => handleOtpKeyDown(e, index)}
-                onPaste={(e) => handleOtpPaste(e)}
-                className="w-12 h-12 text-center text-2xl rounded-md border-0 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600"
-                id={`otp-${index}`}
+                onPaste={handleOtpPaste}
+                className="h-[46px] w-12 rounded-md border-0 text-center text-lg font-semibold shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600"
               />
               {index < 3 && <span className="w-4 h-px bg-gray-300 mx-1"></span>}
             </React.Fragment>
