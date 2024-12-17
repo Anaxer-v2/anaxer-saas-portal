@@ -1,18 +1,15 @@
--- Drop existing objects if they exist
+-- First, drop triggers that depend on functions
 DROP TRIGGER IF EXISTS update_entities_updated_at ON entities;
 DROP TRIGGER IF EXISTS update_profiles_updated_at ON profiles;
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+
+-- Drop tables (which use the type and functions)
+DROP TABLE IF EXISTS entities CASCADE;
+DROP TABLE IF EXISTS profiles CASCADE;
+
+-- Then drop functions and types
 DROP FUNCTION IF EXISTS update_updated_at_column();
 DROP FUNCTION IF EXISTS handle_new_user();
-DROP POLICY IF EXISTS "Users can insert entities" ON entities;
-DROP POLICY IF EXISTS "Users can update entities they created" ON entities;
-DROP POLICY IF EXISTS "Users can view entities they created" ON entities;
-DROP POLICY IF EXISTS "Users can update their own profile" ON profiles;
-DROP POLICY IF EXISTS "Users can view their own profile" ON profiles;
-DROP INDEX IF EXISTS entities_created_by_idx;
-DROP INDEX IF EXISTS profiles_email_idx;
-DROP TABLE IF EXISTS entities;
-DROP TABLE IF EXISTS profiles;
 DROP TYPE IF EXISTS registration_status;
 
 -- Create custom types
@@ -21,6 +18,34 @@ CREATE TYPE registration_status AS ENUM (
     'entity_pending',    -- Needs to complete entity setup
     'completed'          -- Full registration completed
 );
+
+-- Create functions that will be used by triggers
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = now();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS trigger AS $$
+BEGIN
+    INSERT INTO public.profiles (id, first_name, last_name, email, workflow_step)
+    VALUES (
+        NEW.id,
+        COALESCE(NEW.raw_user_meta_data->>'first_name', ''),
+        COALESCE(NEW.raw_user_meta_data->>'last_name', ''),
+        NEW.email,
+        'created'
+    );
+    RETURN NEW;
+EXCEPTION
+    WHEN others THEN
+        RAISE LOG 'Error in handle_new_user: %', SQLERRM;
+        RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Create profiles table
 CREATE TABLE IF NOT EXISTS profiles (
@@ -89,49 +114,19 @@ CREATE POLICY "Users can insert entities"
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
--- Create function to handle user creation
-CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS trigger AS $$
-BEGIN
-    INSERT INTO public.profiles (id, first_name, last_name, email, workflow_step)
-    VALUES (
-        NEW.id,
-        COALESCE(NEW.raw_user_meta_data->>'first_name', ''),
-        COALESCE(NEW.raw_user_meta_data->>'last_name', ''),
-        NEW.email,
-        'created'
-    );
-    RETURN NEW;
-EXCEPTION
-    WHEN others THEN
-        RAISE LOG 'Error in handle_new_user: %', SQLERRM;
-        RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Create trigger for new user creation
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+-- Create triggers
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW
     EXECUTE FUNCTION public.handle_new_user();
 
--- Create function to update updated_at timestamp
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = now();
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Create triggers for updated_at
-DROP TRIGGER IF EXISTS update_profiles_updated_at ON profiles;
+-- Create triggers for updated_at (only after tables exist)
 CREATE TRIGGER update_profiles_updated_at
     BEFORE UPDATE ON profiles
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
 
-DROP TRIGGER IF EXISTS update_entities_updated_at ON entities;
 CREATE TRIGGER update_entities_updated_at
     BEFORE UPDATE ON entities
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column(); 
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column(); 
