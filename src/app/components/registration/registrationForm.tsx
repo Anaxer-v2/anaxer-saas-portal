@@ -98,33 +98,19 @@ export default function RegisterForm() {
         // Wait a moment for the trigger to complete
         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        // Verify the profile was created
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-
-        if (profileError) {
-          console.error('Profile Error:', profileError);
-          throw profileError;
-        }
-
-        if (!profile) {
-          throw new Error('Profile was not created successfully');
-        }
-
-        // Update the workflow step
-        const { error: updateError } = await supabase
+        // Update the profile with first name and last name
+        const { error: updateProfileError } = await supabase
           .from('profiles')
           .update({
+            first_name: formData.first_name,
+            last_name: formData.last_name,
             workflow_step: 'entity_pending'
           })
           .eq('id', user.id);
 
-        if (updateError) {
-          console.error('Update Error:', updateError);
-          throw updateError;
+        if (updateProfileError) {
+          console.error('Profile Update Error:', updateProfileError);
+          throw updateProfileError;
         }
 
         // Move to step 2
@@ -184,66 +170,68 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="flex flex-col items-center w-full max-w-[448px] mx-auto">
-      <img
-        src="/assets/Anaxer_black.svg"
-        alt="Anaxer"
-        className="h-8 w-auto mb-6"
-      />
-      
-      <h2 className="mt-2 text-2xl font-bold leading-9 tracking-tight text-gray-900">
-        {currentStep === 1 ? 'Create your account' : 'Business Information'}
-      </h2>
+    <div className="w-full h-full min-h-screen flex items-center justify-center">
+      <div className="flex flex-col items-center w-full max-w-[448px] mx-auto">
+        <img
+          src="/assets/Anaxer_black.svg"
+          alt="Anaxer"
+          className="h-8 w-auto mb-6"
+        />
+        
+        <h2 className="mt-2 text-2xl font-bold leading-9 tracking-tight text-gray-900">
+          {currentStep === 1 ? 'Create your account' : 'Business Information'}
+        </h2>
 
-      <form onSubmit={handleSubmit} className="mt-10 w-full space-y-6">
-        {error && (
-          <div className="rounded-md bg-red-50 p-4">
-            <div className="flex">
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">Error</h3>
-                <div className="mt-2 text-sm text-red-700">
-                  <p>{error}</p>
+        <form onSubmit={handleSubmit} className="mt-10 w-full space-y-6">
+          {error && (
+            <div className="rounded-md bg-red-50 p-4">
+              <div className="flex">
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-red-800">Error</h3>
+                  <div className="mt-2 text-sm text-red-700">
+                    <p>{error}</p>
+                  </div>
                 </div>
               </div>
             </div>
+          )}
+
+          {currentStep === 1 ? (
+            <CreateAccount formData={formData} handleInputChange={handleInputChange} />
+          ) : (
+            <EntityDetails 
+              formData={formData} 
+              handleInputChange={handleInputChange} 
+              industries={industries} 
+              countries={countries} 
+            />
+          )}
+          <div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="flex w-full items-center justify-center rounded-md bg-[#3b82f6] h-[43px] text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            >
+              {isLoading ? (
+                <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+              ) : null}
+              {currentStep === 1 ? 'Create my account' : 'Continue to dashboard'}
+            </button>
           </div>
-        )}
+        </form>
 
-        {currentStep === 1 ? (
-          <CreateAccount formData={formData} handleInputChange={handleInputChange} />
-        ) : (
-          <EntityDetails 
-            formData={formData} 
-            handleInputChange={handleInputChange} 
-            industries={industries} 
-            countries={countries} 
-          />
+        {currentStep === 1 && (
+          <p className="mt-10 text-center text-sm text-gray-500">
+            Already have an account?{' '}
+            <Link href="/login" className="font-semibold text-indigo-600 hover:text-indigo-500">
+              Log in here
+            </Link>
+          </p>
         )}
-        <div>
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="flex w-full items-center justify-center rounded-md bg-[#3b82f6] h-[43px] text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-          >
-            {isLoading ? (
-              <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-              </svg>
-            ) : null}
-            {currentStep === 1 ? 'Create my account' : 'Continue to dashboard'}
-          </button>
-        </div>
-      </form>
-
-      {currentStep === 1 && (
-        <p className="mt-10 text-center text-sm text-gray-500">
-          Already have an account?{' '}
-          <Link href="/login" className="font-semibold text-indigo-600 hover:text-indigo-500">
-            Log in here
-          </Link>
-        </p>
-      )}
+      </div>
     </div>
-  )
+  );
 }

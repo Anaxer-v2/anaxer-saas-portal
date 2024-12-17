@@ -68,12 +68,17 @@ export default function Login() {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        // Check user's workflow step
-        const { data: profile } = await supabase
+        // Fetch the user's profile to check workflow step
+        const { data: profile, error } = await supabase
           .from('profiles')
           .select('workflow_step')
           .eq('id', session.user.id)
           .single();
+
+        if (error) {
+          console.error('Error fetching profile:', error);
+          return;
+        }
 
         if (profile?.workflow_step === 'entity_pending') {
           router.push('/register?step=2');
@@ -87,8 +92,8 @@ export default function Login() {
   }, [supabase, router])
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-6 py-12 lg:px-8">
-      <div className="w-full max-w-md space-y-8">
+    <div className="w-full h-full min-h-screen flex items-center justify-center">
+      <div className="w-full max-w-md space-y-8 px-6">
         {/* Logo and title */}
         <div className="text-center">
           <Image
