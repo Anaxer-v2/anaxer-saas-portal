@@ -1,0 +1,162 @@
+/* Base container styles */
+.surveyContainer {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Remove all margins, paddings, and borders from survey containers */
+.surveyContainer :global(.sd-root-modern) {
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.surveyContainer :global(.sd-container-modern) {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.surveyContainer :global(.sd-body) {
+  padding: 0.2rem !important;
+  margin: 0;
+}
+
+.surveyContainer :global(.sd-body--static) {
+  padding: 0.2rem !important;
+}
+
+.surveyContainer :global(.sd-page) {
+  padding: 0;
+  margin: 0;
+}
+
+/* Question styles */
+.surveyContainer :global(.sd-question) {
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+  background: transparent;
+  width: 100%;
+}
+
+.surveyContainer :global(.sd-question__title) {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  padding: 0;
+  margin: 0 0 0.5rem 0;
+}
+
+/* Hide question numbers */
+.surveyContainer :global(.sd-question__num) {
+  display: none !important;
+}
+
+.surveyContainer :global(.sd-title-actions__title) {
+  margin-left: 0 !important;
+}
+
+/* Panel styles */
+.surveyContainer :global(.sd-panel) {
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  width: 100%;
+}
+
+.surveyContainer :global(.sd-panel__title) {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  padding: 0;
+  margin: 0 0 1rem 0;
+  background: transparent;
+  border: none;
+}
+
+/* Input styles */
+.surveyContainer :global(.sd-input) {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+  box-shadow: none;
+  outline: none;
+}
+
+.surveyContainer :global(.sd-input:focus) {
+  border-color: #2563eb;
+  box-shadow: none;
+  outline: none;
+}
+
+/* Remove any remaining spacing */
+.surveyContainer :global(.sd-row) {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.surveyContainer :global(.sd-question__content) {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+/* Additional fixes for alignment */
+.surveyContainer :global(.sd-element--with-frame) {
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  width: 100% !important;
+  background: transparent !important;
+}
+
+.surveyContainer :global(.sd-question__header) {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+/* Fix for any wrapping elements */
+.surveyContainer :global(.sd-element) {
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  background: transparent !important;
+}
+
+.surveyContainer :global(.sd-question__content-wrapper) {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+/* Additional fixes for specific elements */
+.surveyContainer :global(.sd-question__content) > div {
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+}
+
+.surveyContainer :global(.sd-question__title--answer) {
+  padding: 0 !important;
+  margin: 0 0 0.5rem 0 !important;
+}
+
+/* Fix for any remaining background colors or borders */
+.surveyContainer :global(.sd-question--answered),
+.surveyContainer :global(.sd-question:hover) {
+  background: transparent !important;
+  border: none !important;
+} 

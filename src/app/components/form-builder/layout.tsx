@@ -1,16 +1,14 @@
 import 'survey-core/defaultV2.min.css';
 import 'survey-creator-core/survey-creator-core.min.css';
 
-export default function RootLayout({
+export default function FormBuilderLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body>
-        {children}
-      </body>
-    </html>
+    <div className="h-screen w-screen">
+      {children}
+    </div>
   )
 }

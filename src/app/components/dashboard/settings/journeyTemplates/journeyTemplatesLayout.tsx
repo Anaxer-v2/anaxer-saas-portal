@@ -20,7 +20,7 @@ const initialTemplates: JourneyTemplate[] = [
 export default function JourneyTemplates() {
   const router = useRouter()
   const [templates] = useState<JourneyTemplate[]>(initialTemplates)
-  const [selectedTemplate, setSelectedTemplate] = useState<number>(1)
+  const [selectedTemplate, setSelectedTemplate] = useState<number | null>(null)
 
   const handleEditTemplate = (id: number) => {
     // Implement edit functionality here
@@ -53,10 +53,10 @@ export default function JourneyTemplates() {
                 {templates.map((template) => (
                   <CardOption
                     key={template.id}
-                    id={template.id}
+                    id={String(template.id)}
                     name={template.name}
                     isSelected={selectedTemplate === template.id}
-                    onSelect={setSelectedTemplate}
+                    onSelect={(id: string) => setSelectedTemplate(Number(id))}
                     onEdit={() => handleEditTemplate(template.id)}
                   />
                 ))}

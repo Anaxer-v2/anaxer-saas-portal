@@ -41,6 +41,7 @@
     "survey-core": "^1.12.4",
     "survey-creator-core": "^1.12.4",
     "survey-creator-react": "^1.12.4",
+    "survey-react": "^1.12.15",
     "survey-react-ui": "^1.12.4",
     "utf-8-validate": "^6.0.4",
     "uuid": "^10.0.0"

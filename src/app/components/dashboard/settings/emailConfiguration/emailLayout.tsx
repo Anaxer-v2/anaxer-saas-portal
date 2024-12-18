@@ -4,11 +4,15 @@ import React, { useState } from 'react'
 import { Switch } from '@headlessui/react'
 import CardOption from '@/app/components/shared/cardOption'
 
+interface EmailTemplate {
+  id: number;
+  name: string;
+  subject: string;
+  content: string;
+}
+
 interface EmailConfig {
-  templates: {
-    id: number;
-    name: string;
-  }[];
+  templates: EmailTemplate[];
   senderIdentity: {
     verified: boolean;
     email: string;
@@ -23,10 +27,10 @@ interface EmailConfig {
 
 const initialEmailConfig: EmailConfig = {
   templates: [
-    { id: 1, name: 'Initial request for information' },
-    { id: 2, name: 'Reminder request for information' },
-    { id: 3, name: 'All information has been provided' },
-    { id: 4, name: 'We need some more information' },
+    { id: 1, name: 'Welcome Email', subject: 'Welcome!', content: 'Welcome content...' },
+    { id: 2, name: 'Verification Email', subject: 'Verify your account', content: 'Verification content...' },
+    { id: 3, name: 'All information has been provided', subject: 'All information has been provided', content: 'All information has been provided content...' },
+    { id: 4, name: 'We need some more information', subject: 'We need some more information', content: 'We need some more information content...' },
   ],
   senderIdentity: {
     verified: true,
@@ -42,7 +46,7 @@ const initialEmailConfig: EmailConfig = {
 
 export default function EmailConfiguration() {
   const [config, setConfig] = useState<EmailConfig>(initialEmailConfig)
-  const [selectedTemplate, setSelectedTemplate] = useState<number>(1)
+  const [selectedTemplate, setSelectedTemplate] = useState<number | null>(null)
 
   const handleInputChange = (key: string, value: any) => {
     setConfig({ ...config, [key]: value })
@@ -58,9 +62,8 @@ export default function EmailConfiguration() {
     })
   }
 
-  const handleEditTemplate = (id: number) => {
-    // Implement edit functionality here
-    console.log(`Editing template with id: ${id}`)
+  const handleEditTemplate = (templateId: number) => {
+    console.log('Editing template:', templateId)
   }
 
   return (
@@ -74,10 +77,10 @@ export default function EmailConfiguration() {
                 {config.templates.map((template) => (
                   <CardOption
                     key={template.id}
-                    id={template.id}
+                    id={String(template.id)}
                     name={template.name}
                     isSelected={selectedTemplate === template.id}
-                    onSelect={setSelectedTemplate}
+                    onSelect={(id: string) => setSelectedTemplate(Number(id))}
                     onEdit={() => handleEditTemplate(template.id)}
                   />
                 ))}
@@ -131,7 +134,9 @@ export default function EmailConfiguration() {
             </div>
 
             <div className="flex flex-col h-full">
-              <h2 className="text-xl font-semibold leading-6 text-gray-900 mb-6">Template preview - {config.templates.find(t => t.id === selectedTemplate)?.name}</h2>
+              <h2 className="text-xl font-semibold leading-6 text-gray-900 mb-6">
+                Template preview - {config.templates.find(t => t.id === selectedTemplate)?.name}
+              </h2>
               <div className="bg-gray-100 rounded-md flex-grow p-6 overflow-auto">
                 {/* Add your email template preview content here */}
                 <p className="text-gray-500">Email template preview placeholder</p>
